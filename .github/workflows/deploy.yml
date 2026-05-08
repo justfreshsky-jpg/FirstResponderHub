@@ -39,4 +39,5 @@ jobs:
             --min-instances=0 \
             --max-instances=3 \
             --cpu-throttling \
+            --update-secrets=GROQ_KEY=groq-key:latest,CEREBRAS_KEY=cerebras-key:latest,GEMINI_KEY=gemini-key:latest,MISTRAL_KEY=mistral-key:latest \
             --quiet
