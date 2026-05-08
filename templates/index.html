@@ -56,6 +56,8 @@
     /* Tool cards */
     .tools { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; }
     .tool { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; box-shadow:0 1px 3px rgba(0,0,0,.04); transition:transform 0.15s, box-shadow 0.15s; }
+    a.tool { text-decoration:none; color:inherit; display:block; }
+    a.tool:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(185,28,28,.12); border-color:#fecaca; }
     .tool:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08); }
     .tool .icon { font-size:32px; margin-bottom:10px; }
     .tool h3 { margin:0 0 6px; font-size:18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
@@ -129,40 +131,40 @@
         <div class="why">~15-30 min saved per call · Voice-to-codes · No PHI · No CAD/RMS integration needed</div>
       </div>
 
-      <div class="tool">
+      <a class="tool" href="/tools/training-tracker">
         <div class="icon">🎓</div>
-        <h3>Training Tracker <span class="pill soon">Roadmap</span></h3>
-        <p>Upload training cert PDFs / photos. Tool extracts member name, course, completion date, expiration. Flags expiring credentials. Generates ISO/state compliance reports.</p>
-        <div class="why">For the training officer who lives in spreadsheets. ~3-5 hrs/month saved.</div>
-      </div>
+        <h3>Training Tracker <span class="pill live">Live</span></h3>
+        <p>Build a 6–12 month training plan aligned with NFPA 1001 / 1002 / 1006 — given your role, current certs, target, and available hours per month. Free FEMA EMI / NFA Online resources called out by name.</p>
+        <div class="why">For the training officer or self-directed FF. Stateless, no spreadsheets.</div>
+      </a>
 
-      <div class="tool">
+      <a class="tool" href="/tools/pre-incident">
         <div class="icon">🏚</div>
-        <h3>Pre-Incident Planning <span class="pill soon">Roadmap</span></h3>
-        <p>Walk a target hazard with your phone. Photos + voice notes → structured pre-plan with Knox box location, hydrants, hazards, occupancy notes. Exports to PDF.</p>
-        <div class="why">Volunteer depts often have zero formal pre-plans. This makes it ~20 min per building.</div>
-      </div>
+        <h3>Pre-Incident Plan <span class="pill live">Live</span></h3>
+        <p>Draft a structured NFPA-1620-aligned pre-incident plan from a building description: construction type, built-in protection, utilities, access, hazards, strategic priorities, recommended response.</p>
+        <div class="why">Volunteer depts often have zero formal pre-plans. This is the starter draft for officer review.</div>
+      </a>
 
-      <div class="tool">
+      <a class="tool" href="/tools/sog-search">
         <div class="icon">📚</div>
-        <h3>SOG/SOP Search <span class="pill soon">Roadmap</span></h3>
-        <p>Upload your department's SOP PDFs. Members ask plain-language questions ("what's our hazmat L2 SOP?") and get the answer + page citation. Stays in your dept — no third-party hosting of policy docs.</p>
-        <div class="why">For SOPs that nobody reads because they're 200+ pages.</div>
-      </div>
+        <h3>SOG / SOP Search <span class="pill live">Live</span></h3>
+        <p>Paste a section of your dept's SOG / SOP, plus the scenario you're facing. You get a plain-English read of what the policy says, the grey areas to escalate, and relevant NFPA / OSHA standards.</p>
+        <div class="why">For SOPs nobody reads because they're 200+ pages. Department's SOG stays authoritative.</div>
+      </a>
 
-      <div class="tool">
+      <a class="tool" href="/tools/apparatus-check">
         <div class="icon">🚒</div>
-        <h3>Apparatus Check Log <span class="pill soon">Roadmap</span></h3>
-        <p>Voice-driven daily / weekly / monthly truck check. Speaks the checklist; you respond "good" or describe defect; output is a structured NFPA-1911 compliant log.</p>
-        <div class="why">Replaces the clipboard. ~5 min saved per check.</div>
-      </div>
+        <h3>Apparatus Check Log <span class="pill live">Live</span></h3>
+        <p>Generate a printable check sheet for your engine / ladder / ambulance / brush truck — exterior, driveline, pump, aerial, SCBA, medical, plus rig-specific extras you list.</p>
+        <div class="why">Replaces 'where did I put that clipboard.' Plain text — paste into a doc and print.</div>
+      </a>
 
-      <div class="tool">
+      <a class="tool" href="/tools/recruitment">
         <div class="icon">📥</div>
-        <h3>Recruitment Funnel <span class="pill soon">Roadmap</span></h3>
-        <p>Landing page that converts community interest into ride-along signups. Auto-screens for age, residency, basic eligibility. Routes qualified applicants to the recruitment officer.</p>
-        <div class="why">Volunteer depts lose ~50% of recruits to admin friction. This shrinks that.</div>
-      </div>
+        <h3>Recruitment Funnel <span class="pill live">Live</span></h3>
+        <p>90-day playbook for volunteer / part-paid depts: outreach channels by locale, message angles that work (skip the hero imagery), interview script, mid-funnel buddy / mentor program, retention metrics.</p>
+        <div class="why">Volunteer depts lose ~50% of recruits to admin friction. This shrinks the funnel.</div>
+      </a>
     </div>
 
     <div class="pitch">

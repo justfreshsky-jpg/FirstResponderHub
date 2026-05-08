@@ -1,15 +1,23 @@
 """
-FirstResponderHub — minimal Flask app serving the static landing page.
+FirstResponderHub — Flask app serving the landing page + roadmap MVPs.
 
-Standalone (no freshsky_common dependency) so it stays light + isolated
-from consumer-portfolio churn. The whole app is one route serving an
-HTML template.
+Standalone (no freshsky_common dependency). Landing page is templated;
+the roadmap items (training tracker, pre-incident plan, SOG search,
+apparatus check, recruitment funnel) live at /tools/<slug> using a
+shared form template + LLM fallback chain (US/EU providers only).
 """
 import os
+import logging
 
-from flask import Response, Flask, jsonify, render_template
+import requests
+from flask import Response, Flask, jsonify, render_template, request
+
+from tools_data import TOOLS, get_tool, all_slugs
 
 app = Flask(__name__)
+
+logger = logging.getLogger(__name__)
+_HTTP_TIMEOUT = 35
 
 
 @app.after_request
@@ -87,10 +95,17 @@ def _robots():
 
 @app.route('/sitemap.xml')
 def _sitemap():
+    extras = ''.join(
+        f'  <url><loc>https://firstresponder.freshskyai.com/tools/{s}</loc>'
+        f'<changefreq>monthly</changefreq><priority>0.7</priority></url>\n'
+        for s in all_slugs()
+    )
     return Response(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         '  <url><loc>https://firstresponder.freshskyai.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n'
+        '  <url><loc>https://firstresponder.freshskyai.com/tools</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        + extras +
         '</urlset>\n',
         mimetype='application/xml',
     )
@@ -104,6 +119,132 @@ def _privacy():
 @app.route('/terms')
 def _terms():
     return Response(_TERMS_HTML, mimetype='text/html')
+
+
+# ─── LLM fallback chain (US/EU providers only) ──────────────────────────
+
+def _llm_groq(system, user):
+    key = os.environ.get('GROQ_KEY', '')
+    if not key:
+        return None
+    r = requests.post(
+        'https://api.groq.com/openai/v1/chat/completions',
+        headers={'Authorization': f'Bearer {key}'},
+        json={'model': os.environ.get('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+              'messages': [{'role': 'system', 'content': system},
+                           {'role': 'user', 'content': user}],
+              'temperature': 0.3},
+        timeout=_HTTP_TIMEOUT)
+    r.raise_for_status()
+    return r.json()['choices'][0]['message']['content']
+
+
+def _llm_cerebras(system, user):
+    key = os.environ.get('CEREBRAS_KEY', '')
+    if not key:
+        return None
+    r = requests.post(
+        'https://api.cerebras.ai/v1/chat/completions',
+        headers={'Authorization': f'Bearer {key}'},
+        json={'model': os.environ.get('CEREBRAS_MODEL', 'llama-3.3-70b'),
+              'messages': [{'role': 'system', 'content': system},
+                           {'role': 'user', 'content': user}],
+              'temperature': 0.3},
+        timeout=_HTTP_TIMEOUT)
+    r.raise_for_status()
+    return r.json()['choices'][0]['message']['content']
+
+
+def _llm_gemini(system, user):
+    key = os.environ.get('GEMINI_KEY', '')
+    if not key:
+        return None
+    r = requests.post(
+        f'https://generativelanguage.googleapis.com/v1beta/models/'
+        f'gemini-2.5-flash:generateContent?key={key}',
+        headers={'Content-Type': 'application/json'},
+        json={'system_instruction': {'parts': [{'text': system}]},
+              'contents': [{'role': 'user', 'parts': [{'text': user}]}],
+              'generationConfig': {'temperature': 0.3}},
+        timeout=_HTTP_TIMEOUT)
+    r.raise_for_status()
+    return r.json()['candidates'][0]['content']['parts'][0]['text']
+
+
+def _llm_mistral(system, user):
+    key = os.environ.get('MISTRAL_KEY', '')
+    if not key:
+        return None
+    r = requests.post(
+        'https://api.mistral.ai/v1/chat/completions',
+        headers={'Authorization': f'Bearer {key}'},
+        json={'model': os.environ.get('MISTRAL_MODEL', 'mistral-small-latest'),
+              'messages': [{'role': 'system', 'content': system},
+                           {'role': 'user', 'content': user}],
+              'temperature': 0.3},
+        timeout=_HTTP_TIMEOUT)
+    r.raise_for_status()
+    return r.json()['choices'][0]['message']['content']
+
+
+_PROVIDERS = [
+    ('groq', _llm_groq),
+    ('cerebras', _llm_cerebras),
+    ('gemini', _llm_gemini),
+    ('mistral', _llm_mistral),
+]
+
+
+def _llm(system: str, user: str) -> str:
+    last_err = None
+    for name, fn in _PROVIDERS:
+        try:
+            out = fn(system, user)
+            if out:
+                return out.strip()
+        except Exception as e:
+            last_err = e
+            logger.warning('Provider %s failed: %s', name, e)
+    raise RuntimeError(f'All providers failed: {last_err}')
+
+
+# ─── /tools index + per-tool routes ─────────────────────────────────────
+
+@app.route('/tools')
+def _tools_index():
+    return render_template('tools_index.html', slugs=all_slugs(), tools=TOOLS)
+
+
+@app.route('/tools/<slug>', methods=['GET', 'POST'])
+def _tools_run(slug):
+    tool = get_tool(slug)
+    if not tool:
+        return Response('Tool not found', status=404, mimetype='text/plain')
+
+    result = None
+    error = None
+    submitted = {}
+    if request.method == 'POST':
+        # Collect form data (only declared fields)
+        for field_key, _label, _kind in tool['fields']:
+            submitted[field_key] = (request.form.get(field_key) or '').strip()[:4000]
+        # Reject empty submissions to save LLM call
+        if not any(v for v in submitted.values()):
+            error = 'Please fill in at least one field.'
+        else:
+            user_msg = '\n\n'.join(f'{k}:\n{v}' for k, v in submitted.items() if v)
+            try:
+                result = _llm(tool['system_prompt'], user_msg)
+            except Exception as e:
+                logger.exception('LLM error for %s', slug)
+                error = ('All AI providers are currently unreachable. '
+                         f'Please try again in a minute. ({type(e).__name__})')
+
+    return render_template(
+        'tools_run.html',
+        slug=slug, tool=tool, submitted=submitted,
+        result=result, error=error,
+    )
 
 
 if __name__ == '__main__':

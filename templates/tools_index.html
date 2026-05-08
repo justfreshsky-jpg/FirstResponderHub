@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tools — Fresh Sky AI for First Responders</title>
+<meta name="description" content="Free AI tools for fire / EMS: training tracker, pre-incident planning, SOG search, apparatus check log, recruitment funnel.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="https://firstresponder.freshskyai.com/tools">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;background:#f8fafc;line-height:1.55}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.6rem;background:#fff;border-bottom:1px solid #e5e7eb}
+nav a{color:#b91c1c;text-decoration:none;font-weight:600}
+main{max-width:880px;margin:0 auto;padding:2.5rem 1.4rem 4rem}
+h1{font-size:1.9rem;margin:0 0 .4rem;font-weight:800}
+.lede{color:#64748b;margin:0 0 2rem;font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1.4rem;text-decoration:none;color:#0f172a;display:block;transition:border-color .15s,transform .15s}
+.card:hover{border-color:#b91c1c;transform:translateY(-2px)}
+.card .ic{font-size:1.8rem;line-height:1}
+.card h2{font-size:1.1rem;font-weight:700;margin:.6rem 0 .35rem;color:#b91c1c}
+.card p{font-size:.9rem;color:#64748b;margin:0}
+.foot{color:#94a3b8;font-size:.82rem;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid #e5e7eb;text-align:center}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/">🚒 Fresh Sky AI for First Responders</a>
+  <a href="/" style="color:#64748b;font-weight:400">← Home</a>
+</nav>
+
+<main>
+  <h1>Free tools for fire / EMS</h1>
+  <p class="lede">All free, all anonymous, all AI-assisted drafts (verify against your AHJ before using on-scene). Built and maintained by a CAP / volunteer-FD adjacent operator who wants to give back.</p>
+
+  <div class="grid">
+    {% for slug in slugs %}
+      {% set t = tools[slug] %}
+      <a class="card" href="/tools/{{ slug }}">
+        <div class="ic">{{ t.icon }}</div>
+        <h2>{{ t.title }}</h2>
+        <p>{{ t.tagline }}</p>
+      </a>
+    {% endfor %}
+  </div>
+
+  <p class="foot">
+    Want a tool that's not here? <a href="mailto:admin@freshskyllc.com" style="color:#b91c1c">Tell me what eats your shift</a>.
+  </p>
+</main>
+
+</body></html>
