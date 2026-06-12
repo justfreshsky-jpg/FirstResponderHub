@@ -187,9 +187,10 @@ def _llm_mistral(system, user):
     return r.json()['choices'][0]['message']['content']
 
 
-from freshsky_common.llm import LLMChain  # noqa: E402
+from freshsky_common.llm import LLMChain, install_provider_metrics  # noqa: E402
 
 _SHARED_LLM = LLMChain()
+install_provider_metrics(app)
 
 
 def _llm_shared(system, user):
