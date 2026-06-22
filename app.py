@@ -1,15 +1,14 @@
 """
 FirstResponderHub — Flask app serving the landing page + roadmap MVPs.
 
-Standalone (no freshsky_common dependency). Landing page is templated;
-the roadmap items (training tracker, pre-incident plan, SOG search,
+The landing page is templated; roadmap items (training tracker,
+pre-incident plan, SOG search,
 apparatus check, recruitment funnel) live at /tools/<slug> using a
-shared form template + LLM fallback chain (US/EU providers only).
+shared form template + privacy-restricted U.S. provider fallback chain.
 """
 import os
 import logging
 
-import requests
 from flask import Response, Flask, jsonify, render_template, request
 
 from tools_data import TOOLS, get_tool, all_slugs
@@ -17,7 +16,6 @@ from tools_data import TOOLS, get_tool, all_slugs
 app = Flask(__name__)
 
 logger = logging.getLogger(__name__)
-_HTTP_TIMEOUT = 35
 
 
 @app.after_request
@@ -46,11 +44,11 @@ _PRIVACY_HTML = """<!DOCTYPE html>
 </head><body>
 <a href="/">← Back to Fresh Sky AI for First Responders</a>
 <h1>Privacy Policy — Fresh Sky AI for First Responders</h1>
-<p><em>Last updated 2026-05-07</em></p>
+<p><em>Last updated 2026-06-21</em></p>
 <h2>What we collect</h2>
 <p>Fresh Sky AI for First Responders is a stateless tool. We do <strong>not</strong> require accounts. We do <strong>not</strong> store the text or voice input you submit. We do <strong>not</strong> upload member rosters, patient data, or any personally identifying information.</p>
 <h2>What we send to AI providers</h2>
-<p>The text or voice transcript you submit is sent to one of several US/EU-jurisdiction LLM providers (Groq, Cerebras, Mistral, HuggingFace via Together, Sambanova, Cloudflare Workers AI, or Google Gemini) for processing. None of these providers train on inputs from our paid-tier API calls (Gemini's free tier may; we do not pass PII).</p>
+<p>The text you submit is sent to the restricted U.S. provider pool (Cloudflare, Ollama, Cerebras, SambaNova, and Groq only when account-level Zero Data Retention is confirmed). Provider availability can change. Do not submit PII, PHI, member rosters, patient data, or sensitive operational details.</p>
 <h2>What gets logged</h2>
 <p>Standard request metadata (IP address, timestamp, response code) is logged by Google Cloud Run for operational purposes (debugging, abuse prevention) and rotated automatically per Google retention defaults. We do not associate logs with individual users.</p>
 <h2>Cookies</h2>
@@ -121,75 +119,11 @@ def _terms():
     return Response(_TERMS_HTML, mimetype='text/html')
 
 
-# ─── LLM fallback chain (US/EU providers only) ──────────────────────────
-
-def _llm_groq(system, user):
-    key = os.environ.get('GROQ_KEY', '')
-    if not key:
-        return None
-    r = requests.post(
-        'https://api.groq.com/openai/v1/chat/completions',
-        headers={'Authorization': f'Bearer {key}'},
-        json={'model': os.environ.get('GROQ_MODEL', 'llama-3.3-70b-versatile'),
-              'messages': [{'role': 'system', 'content': system},
-                           {'role': 'user', 'content': user}],
-              'temperature': 0.3},
-        timeout=_HTTP_TIMEOUT)
-    r.raise_for_status()
-    return r.json()['choices'][0]['message']['content']
-
-
-def _llm_cerebras(system, user):
-    key = os.environ.get('CEREBRAS_KEY', '')
-    if not key:
-        return None
-    r = requests.post(
-        'https://api.cerebras.ai/v1/chat/completions',
-        headers={'Authorization': f'Bearer {key}'},
-        json={'model': os.environ.get('CEREBRAS_MODEL', 'llama-3.3-70b'),
-              'messages': [{'role': 'system', 'content': system},
-                           {'role': 'user', 'content': user}],
-              'temperature': 0.3},
-        timeout=_HTTP_TIMEOUT)
-    r.raise_for_status()
-    return r.json()['choices'][0]['message']['content']
-
-
-def _llm_gemini(system, user):
-    key = os.environ.get('GEMINI_KEY', '')
-    if not key:
-        return None
-    r = requests.post(
-        f'https://generativelanguage.googleapis.com/v1beta/models/'
-        f'gemini-2.5-flash:generateContent?key={key}',
-        headers={'Content-Type': 'application/json'},
-        json={'system_instruction': {'parts': [{'text': system}]},
-              'contents': [{'role': 'user', 'parts': [{'text': user}]}],
-              'generationConfig': {'temperature': 0.3}},
-        timeout=_HTTP_TIMEOUT)
-    r.raise_for_status()
-    return r.json()['candidates'][0]['content']['parts'][0]['text']
-
-
-def _llm_mistral(system, user):
-    key = os.environ.get('MISTRAL_KEY', '')
-    if not key:
-        return None
-    r = requests.post(
-        'https://api.mistral.ai/v1/chat/completions',
-        headers={'Authorization': f'Bearer {key}'},
-        json={'model': os.environ.get('MISTRAL_MODEL', 'mistral-small-latest'),
-              'messages': [{'role': 'system', 'content': system},
-                           {'role': 'user', 'content': user}],
-              'temperature': 0.3},
-        timeout=_HTTP_TIMEOUT)
-    r.raise_for_status()
-    return r.json()['choices'][0]['message']['content']
-
+# ─── Privacy-restricted U.S. provider chain ──────────────────────────────
 
 from freshsky_common.llm import LLMChain, install_provider_metrics  # noqa: E402
 
-_SHARED_LLM = LLMChain()
+_SHARED_LLM = LLMChain(privacy_profile="education_deidentified")
 install_provider_metrics(app)
 
 

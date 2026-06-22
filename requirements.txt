@@ -1,4 +1,4 @@
-flask==3.1.1
+flask==3.1.3
+Werkzeug==3.1.8
 gunicorn==23.0.0
-requests==2.32.3
-freshsky-common @ git+https://github.com/justfreshsky-jpg/freshsky-common.git@15acc8487ba18c746ba4b7da0772970e11ff2712
+freshsky-common @ git+https://github.com/justfreshsky-jpg/freshsky-common.git@4def2e152bbbf03b8dbb54486399f4ae954f71b8

@@ -1,6 +1,6 @@
 # FirstResponderHub
 
-Static landing page for Fresh Sky AI's free first-responder tools. Live at <https://firstresponder.freshskyai.com>.
+Free specialized AI tools for U.S. first responders and volunteers. Live at <https://firstresponder.freshskyai.com>.
 
 The umbrella site that:
 - Tells the volunteer-firefighter-applicant pitch
@@ -8,7 +8,7 @@ The umbrella site that:
 - Lists the roadmap for departments that want to weigh in
 - Is the canonical URL to send to a chief
 
-Standalone Flask app, no `freshsky_common` dependency. The whole thing is one route serving an HTML template.
+Flask app using the shared privacy-restricted U.S. provider chain. Public access is free; there is no paid plan, contract, or user API key.
 
 ## Deploy
 
