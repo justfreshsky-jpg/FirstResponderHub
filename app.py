@@ -123,7 +123,7 @@ def _terms():
 
 from freshsky_common.llm import LLMChain, install_provider_metrics  # noqa: E402
 
-_SHARED_LLM = LLMChain(privacy_profile="education_deidentified")
+_SHARED_LLM = LLMChain(privacy_profile="us_public")
 install_provider_metrics(app)
 
 

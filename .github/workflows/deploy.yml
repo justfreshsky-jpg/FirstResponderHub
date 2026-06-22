@@ -54,7 +54,7 @@ jobs:
             --min-instances=0 \
             --max-instances=3 \
             --cpu-throttling \
-            --set-env-vars=GROQ_ZDR_CONFIRMED=true \
+            --update-env-vars=LLM_PRIVACY_PROFILE=us_public,GROQ_ZDR_CONFIRMED=true \
             --remove-secrets=MISTRAL_KEY \
             --update-secrets=GROQ_KEY=groq-key:latest,CEREBRAS_KEY=cerebras-key:latest \
             --quiet
