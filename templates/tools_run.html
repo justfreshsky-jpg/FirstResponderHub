@@ -26,6 +26,11 @@ button{background:#b91c1c;color:#fff;border:none;padding:.75rem 1.4rem;border-ra
 button:hover{background:#991b1b}
 .error{background:#fee2e2;color:#7f1d1d;padding:.8rem 1rem;border-radius:8px;margin:1rem 0;font-size:.92rem;border:1px solid #fecaca}
 .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1.4rem 1.6rem;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;line-height:1.7;color:#0f172a}
+.sources{margin-top:1.5rem;padding:1rem 1.1rem;border:1px solid #e5e7eb;border-radius:10px;background:#fff;font-size:.84rem}
+.sources h2{font-size:.95rem;margin:0 0 .5rem}
+.sources ul{margin:.25rem 0 0;padding-left:1.2rem}
+.sources li{margin:.35rem 0;color:#64748b}
+.sources a{font-weight:600}
 .disclaimer{color:#94a3b8;font-size:.82rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e5e7eb}
 </style>
 <style id="fs-portfolio-skin">
@@ -118,11 +123,26 @@ a:hover{color:#c4b5fd}
     <div class="result">{{ result }}</div>
   {% endif %}
 
+  {% if tool.authorities %}
+    <section class="sources" aria-labelledby="source-heading">
+      <h2 id="source-heading">Authoritative references</h2>
+      <ul>
+        {% for source in tool.authorities %}
+          <li>
+            <a href="{{ source.url }}" target="_blank" rel="noopener">{{ source.title }}</a>
+            — {{ source.version }}; retrieved {{ source.retrieved }}.
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
   <p class="disclaimer">
     <strong>Disclaimer:</strong> AI-generated draft. Verify against your AHJ, NFPA standards,
-    department SOG, and current practice before using on-scene or filing. Do not submit
-    PII / PHI. No data is stored — your input is sent to one of several US/EU LLM
-    providers and discarded.
+    department SOG, and current practice. Never use this tool for active-incident decisions.
+    Do not submit
+    PII / PHI. This app does not store form input; processing uses the configured
+    privacy-restricted shared provider chain.
   </p>
 </main>
 

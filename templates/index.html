@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Fresh Sky AI — Free AI tools for fire, EMS, and police</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Free AI tools built for U.S. first responders by a volunteer firefighter applicant + software engineer. NFIRS report drafting, training tracking, pre-incident planning, SOG/SOP search. No contracts, no upsell, no PHI.">
+  <meta name="description" content="Free AI-assisted administrative tools for U.S. first responders: training planning, pre-incident data collection, SOG/SOP review, and check sheets. Drafts require AHJ review; never for active-incident decisions.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://firstresponder.freshskyai.com/">
   <meta property="og:type" content="website">
@@ -34,6 +34,8 @@
     .hero h1 em { font-style:normal; color:var(--gold); }
     .hero p.lede { font-size:18px; max-width:680px; margin:0 auto 26px; color:#e7e5e4; }
     .hero .cta-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .source-notice { max-width:760px; margin:24px auto 0; padding:14px 16px; border:1px solid rgba(251,191,36,.45); border-radius:10px; background:rgba(251,191,36,.08); color:#e7e5e4; font-size:13.5px; line-height:1.55; }
+    .source-notice a { color:var(--gold); font-weight:700; }
     .btn { display:inline-block; padding:14px 26px; border-radius:10px; text-decoration:none; font-weight:600; font-size:15px; transition:transform 0.1s; }
     .btn:hover { transform:translateY(-1px); }
     .btn-primary { background:var(--accent); color:#fff; }
@@ -155,10 +157,14 @@ a:hover{color:#c4b5fd}
   <section class="hero">
     <span class="badge">Volunteer-built · Free for departments</span>
     <h1>Free AI tools for the people who <em>show up at 3 AM</em>.</h1>
-    <p class="lede">Built by a volunteer firefighter applicant who happens to be a software engineer. Agentic, multimodal AI for the call: NFIRS reports built from a 30-second voice memo, training tracking, pre-incident planning, SOG search. Built for the agentic decade so paperwork comes off your plate and you stay focused on the call.</p>
+    <p class="lede">AI-assisted administrative drafts for training planning, pre-incident data collection, SOG review, and routine check sheets. Every output requires department review and is deliberately excluded from active-incident decisions.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="https://nfirs.freshskyai.com" target="_blank" rel="noopener">Try the NFIRS draft tool →</a>
+      <a class="btn btn-primary" href="#tools">Explore current tools →</a>
       <a class="btn btn-ghost" href="https://www.freshskyai.com/contact" target="_blank" rel="noopener">Tell me what eats your time</a>
+    </div>
+    <div class="source-notice">
+      <strong>Current U.S. incident reporting:</strong> USFA states that calendar-year 2026 incident reporting is exclusively in NERIS; NFIRS edits ended January 31, 2026 and NFIRS became unavailable in February. The linked NFIRS helper below is a legacy demonstration, not a current filing tool.
+      <a href="https://www.usfa.fema.gov/nfirs/sunset/" target="_blank" rel="noopener">USFA NFIRS sunset notice ↗</a> (retrieved July 16, 2026).
     </div>
   </section>
 
@@ -166,7 +172,7 @@ a:hover{color:#c4b5fd}
     <div class="story">
       <h3>The pitch, short version</h3>
       <p>I'm applying to volunteer with my local fire department in Franklin Township, Somerset County NJ. While that's processing, I'm putting my day-job skills (AI engineer at Fresh Sky LLC, an LLC I run that builds AI tools for civic problems) to work for the fire service.</p>
-      <p>If your department uses NFIRS-5, you already know how much time it eats. I built a tool that turns a 30-second voice memo after a call into a structured NFIRS-1 draft with the right codes pre-filled. <strong>It's free for departments. No contracts. No upsell. No PHI.</strong></p>
+      <p>I originally built a voice-to-NFIRS draft demonstration to explore paperwork reduction. USFA has since sunset NFIRS and moved 2026 reporting to NERIS, so that demonstration is no longer presented as a filing workflow. The current tools here focus on training and administrative drafts that avoid dispatch, patient care, and active-scene decisions.</p>
       <p>If you have other paperwork or admin pain — training cert tracking, pre-incident plans, SOG search, recruitment — I can build something for that too. Free. The reason I can do this for free is operator-side cost is near-zero on Cloud Run with scale-to-zero, and I'm not charging for my time.</p>
       <div class="signature">— Volunteer applicant, Franklin Township FD · Somerset County, NJ</div>
     </div>
@@ -179,31 +185,31 @@ a:hover{color:#c4b5fd}
     <div class="tools">
       <div class="tool">
         <div class="icon">📋</div>
-        <h3>NFIRS Assistant <span class="pill live">Live</span></h3>
-        <p>Speak (or type) ~30 seconds about a call. Get a structured NFIRS-1 (Basic Module) draft with incident type, property use, actions taken, and cause-of-ignition codes pre-filled. Review, copy, paste into your existing NFIRS-5 entry tool.</p>
-        <a class="try" href="https://nfirs.freshskyai.com" target="_blank" rel="noopener">Try it →</a>
-        <div class="why">~15-30 min saved per call · Voice-to-codes · No PHI · No CAD/RMS integration needed</div>
+        <h3>NFIRS Draft Demonstration <span class="pill soon">Legacy</span></h3>
+        <p>Historical demonstration of voice-to-NFIRS-1 field drafting. USFA has retired NFIRS; do not use this for calendar-year 2026 reporting or as a NERIS substitute.</p>
+        <a class="try" href="https://nfirs.freshskyai.com" target="_blank" rel="noopener">View legacy demo →</a>
+        <div class="why">Reference/demo only · Not a reporting system · Not for current filing</div>
       </div>
 
       <a class="tool" href="/tools/training-tracker">
         <div class="icon">🎓</div>
         <h3>Training Tracker <span class="pill live">Live</span></h3>
-        <p>Build a 6–12 month training plan aligned with NFPA 1001 / 1002 / 1006 — given your role, current certs, target, and available hours per month. Free FEMA EMI / NFA Online resources called out by name.</p>
+        <p>Build a 6–12 month training plan using NFPA 1010 (2024), NFPA 1020 (2025), NFPA 1006, and the exact editions and credential rules adopted by your AHJ.</p>
         <div class="why">For the training officer or self-directed FF. Stateless, no spreadsheets.</div>
       </a>
 
       <a class="tool" href="/tools/pre-incident">
         <div class="icon">🏚</div>
         <h3>Pre-Incident Plan <span class="pill live">Live</span></h3>
-        <p>Draft a structured NFPA-1620-aligned pre-incident plan from a building description: construction type, built-in protection, utilities, access, hazards, strategic priorities, recommended response.</p>
-        <div class="why">Volunteer depts often have zero formal pre-plans. This is the starter draft for officer review.</div>
+        <p>Draft a site-verification worksheet using NFPA 1660 (2024), which incorporates former NFPA 1620 content. Unknown utilities, protection systems, water supply, and access remain explicitly unverified.</p>
+        <div class="why">Information-gathering aid for officer review · No alarm assignments or tactical recommendations.</div>
       </a>
 
       <a class="tool" href="/tools/sog-search">
         <div class="icon">📚</div>
         <h3>SOG / SOP Search <span class="pill live">Live</span></h3>
-        <p>Paste a section of your dept's SOG / SOP, plus the scenario you're facing. You get a plain-English read of what the policy says, the grey areas to escalate, and relevant NFPA / OSHA standards.</p>
-        <div class="why">For SOPs nobody reads because they're 200+ pages. Department's SOG stays authoritative.</div>
+        <p>For training or after-action review, paste a section of your department's SOG/SOP plus a non-active scenario. Get a plain-language reading, grey areas to escalate, and current NFPA/OSHA source leads.</p>
+        <div class="why">Not for active incidents. The adopted SOG, applicable law, and chain of command remain controlling.</div>
       </a>
 
       <a class="tool" href="/tools/apparatus-check">
@@ -217,7 +223,7 @@ a:hover{color:#c4b5fd}
         <div class="icon">📥</div>
         <h3>Recruitment Funnel <span class="pill live">Live</span></h3>
         <p>90-day playbook for volunteer / part-paid depts: outreach channels by locale, message angles that work (skip the hero imagery), interview script, mid-funnel buddy / mentor program, retention metrics.</p>
-        <div class="why">Volunteer depts lose ~50% of recruits to admin friction. This shrinks the funnel.</div>
+        <div class="why">Tests department-specific recruiting hypotheses without asserting a universal attrition rate or cause.</div>
       </a>
     </div>
 
@@ -235,14 +241,14 @@ a:hover{color:#c4b5fd}
       <h3>The thinking</h3>
       <ul>
         <li><strong>Volunteer fire is structurally underfunded for software.</strong> Large departments can buy enterprise suites. Volunteer departments often rely on spreadsheets, documents, and clipboards. Focused AI can help close that gap without charging departments.</li>
-        <li><strong>Admin work is the recruit-killer.</strong> Multiple studies — and every chief I've talked to — say the same thing: probationaries leave because of paperwork burden, not because of fire calls. Cutting paperwork keeps volunteers.</li>
+        <li><strong>Administrative friction is worth measuring.</strong> Scheduling, training access, expectations, family support, and paperwork may affect recruiting or retention differently in each department. The tool treats those as hypotheses to test, not universal causes.</li>
         <li><strong>Public access is free.</strong> The tools use a restricted U.S. provider pool with automatic fallback, and Cloud Run scales to zero when idle. Departments do not need a paid plan, contract, or API key.</li>
         <li><strong>I want to volunteer.</strong> I'm applying to my local department now. While that's processing, I can do something useful with my engineering skills that's not "send a check."</li>
       </ul>
       <h3 style="margin-top:24px;">What's deliberately out of scope</h3>
       <ul>
         <li><strong>Anything that touches dispatch decisions or scene tactics.</strong> AI hallucinations + life-safety = no. Hard line.</li>
-        <li><strong>Anything that touches PHI / patient care.</strong> EMS run reports use NEMSIS, which is HIPAA-regulated. Not going there. NFIRS-1 is incident data, not patient data, which is why this app is OK.</li>
+        <li><strong>Anything that touches PHI / patient care.</strong> Patient-care records can contain protected health information and require department-specific legal, security, and records controls. These tools do not accept patient narratives or replace NEMSIS/ePCR systems.</li>
         <li><strong>Per-department customization that requires my time forever.</strong> The tools are designed to work for any department out of the box, with optional config. I can fork for a department, but I'm not running a managed service.</li>
         <li><strong>Replacing your CAD/RMS.</strong> These tools complement what you already have. Zero integration required.</li>
       </ul>

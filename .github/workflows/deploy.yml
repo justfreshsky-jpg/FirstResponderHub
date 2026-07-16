@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'app.py'
+      - 'tools_data.py'
       - 'requirements.txt'
       - 'Dockerfile'
       - 'templates/**'
