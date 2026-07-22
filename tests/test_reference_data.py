@@ -50,11 +50,12 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertIn('OSHA 29 CFR 1910.134', prompt)
         self.assertIn('Never treat this output as real-time scene direction', prompt)
 
-    def test_homepage_labels_nfirs_as_legacy_and_neris_as_current(self):
+    def test_homepage_labels_neris_as_current_and_nfirs_as_retired(self):
         homepage = (ROOT / 'templates/index.html').read_text()
         self.assertIn('calendar-year 2026 incident reporting is exclusively in NERIS', homepage)
-        self.assertIn('NFIRS Draft Demonstration', homepage)
-        self.assertIn('Legacy', homepage)
+        self.assertIn('NERIS Preparation Assistant', homepage)
+        self.assertIn('No official codes', homepage)
+        self.assertNotIn('NFIRS Draft Demonstration', homepage)
         self.assertNotIn('NFIRS Assistant <span class="pill live">', homepage)
         self.assertNotIn('Volunteer depts lose ~50%', homepage)
         self.assertNotIn('Multiple studies', homepage)

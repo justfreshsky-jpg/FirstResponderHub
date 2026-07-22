@@ -1,11 +1,11 @@
 # FirstResponderHub
 
-Free specialized AI tools for U.S. first responders and volunteers. Live at <https://firstresponder.freshskyai.com>.
+Free specialized administrative tools for U.S. first responders and volunteers. Live at <https://firstresponder.freshskyai.com>.
 
 The umbrella site that:
 - Tells the volunteer-firefighter-applicant pitch
 - Links to current administrative drafting tools
-- Labels the separate NFIRS demonstration as legacy because USFA moved 2026 reporting to NERIS
+- Links to a separate, bounded NERIS preparation aid that does not file reports or assign official codes
 - Is the canonical URL to send to a chief
 
 Current source mappings use NFPA 1010 (2024), NFPA 1020 (2025), NFPA 1550 (2024), NFPA 1660 (2024), OSHA 29 CFR 1910.134, and NFPA 1006 with the edition formally adopted by the state/AHJ. NFPA's availability of a 2027 NFPA 1006 edition does not make it universally controlling. Source URLs, editions, and retrieval dates appear beside affected tools. Outputs are administrative drafts only and must never direct active-incident decisions.
