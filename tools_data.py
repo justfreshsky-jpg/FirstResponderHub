@@ -2,7 +2,7 @@
 First-responder tool definitions for /tools/<slug> routes.
 
 Each tool is a single LLM-driven worksheet — one form, one prompt,
-one result page. Stateless (no database). Free for fire / EMS.
+one result page. Stateless (no database). Three previews, then paid access.
 
 To add a new tool, append an entry to TOOLS. The route handler in
 app.py reads from this dict.

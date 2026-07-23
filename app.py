@@ -14,9 +14,24 @@ from flask import Response, Flask, jsonify, render_template, request
 from tools_data import TOOLS, get_tool, all_slugs
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(32))
 
 from freshsky_common.revenue import install_visuals  # noqa: E402
 install_visuals(app)
+from freshsky_common.freemium import register_freemium  # noqa: E402
+from freshsky_common.hulec import install_hulec  # noqa: E402
+from freshsky_common.security import install_security_headers  # noqa: E402
+
+register_freemium(
+    app,
+    primary_url=os.environ.get(
+        'APP_URL', 'https://firstresponder.freshskyai.com'
+    ),
+    community_mode=True,
+    gate_all_post=True,
+)
+install_hulec(app, slug='firstresponder')
+install_security_headers(app)
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +86,7 @@ _TERMS_HTML = """<!DOCTYPE html>
 <h1>Terms of Use — Fresh Sky AI for First Responders</h1>
 <p><em>Last updated 2026-05-07</em></p>
 <h2>What this is</h2>
-<p>Fresh Sky AI for First Responders is a free volunteer-built tool offered by Fresh Sky LLC for use by U.S. fire departments, EMS, and police. No charge. No contract. No license required.</p>
+<p>Fresh Sky AI for First Responders is a paid, privacy-first tool offered by Fresh Sky LLC for U.S. fire departments, EMS, and police. Three previews are included; continued access is $29.99/month and may be canceled monthly.</p>
 <h2>What this is not</h2>
 <p>Fresh Sky AI for First Responders is <strong>not</strong> affiliated with any government agency, military service, or official entity. Output is AI-generated and intended as a draft or study aid only — the human user is responsible for verifying accuracy against authoritative current sources before acting on or filing anything.</p>
 <h2>Use at your own discretion</h2>
