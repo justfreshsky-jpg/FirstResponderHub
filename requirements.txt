@@ -1,4 +1,4 @@
 flask==3.1.3
 Werkzeug==3.1.8
 gunicorn==23.0.0
-freshsky-common @ git+https://github.com/justfreshsky-jpg/freshsky-common.git@b9cd4319025d936802fd8b0321a1c81331111089
+freshsky-common @ git+https://github.com/justfreshsky-jpg/freshsky-common.git@587c4381f5976e66341fca42ca130a29528587bb
