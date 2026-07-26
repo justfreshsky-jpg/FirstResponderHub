@@ -52,6 +52,7 @@ class ReferenceDataTests(unittest.TestCase):
 
     def test_homepage_labels_neris_as_current_and_nfirs_as_retired(self):
         homepage = (ROOT / 'templates/index.html').read_text()
+        self.assertIn('NFIRS is decommissioned; NERIS is current', homepage)
         self.assertIn('calendar-year 2026 incident reporting is exclusively in NERIS', homepage)
         self.assertIn('NERIS Preparation Assistant', homepage)
         self.assertIn('No official codes', homepage)
@@ -59,6 +60,34 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertNotIn('NFIRS Assistant <span class="pill live">', homepage)
         self.assertNotIn('Volunteer depts lose ~50%', homepage)
         self.assertNotIn('Multiple studies', homepage)
+
+    def test_civic_access_and_sensitive_data_boundaries_are_explicit(self):
+        homepage = (ROOT / 'templates/index.html').read_text()
+        tools_index = (ROOT / 'templates/tools_index.html').read_text()
+        tools_run = (ROOT / 'templates/tools_run.html').read_text()
+        app_source = (ROOT / 'app.py').read_text()
+        requirements = (ROOT / 'requirements.txt').read_text()
+        workflow = (ROOT / '.github/workflows/deploy.yml').read_text()
+
+        for page in (homepage, tools_index):
+            self.assertIn('$14.99/month', page)
+            self.assertIn('40 usage units per day', page)
+            self.assertIn('200 per month', page)
+            self.assertIn('Civic', page)
+        for page in (homepage, tools_index, tools_run):
+            self.assertIn('rosters', page)
+            self.assertIn('CAPIDs', page)
+            self.assertIn('PHI', page)
+            self.assertIn('incident or case identifiers', page)
+            self.assertIn('operational secrets', page)
+        self.assertNotIn('Advanced $29.99/month', homepage)
+        self.assertIn("subscription_tier='civic'", app_source)
+        self.assertIn("workspace_id='civic'", app_source)
+        self.assertIn(
+            '05fe2d0a11fd81ee82f16f6270fc061b0fc15b37',
+            requirements,
+        )
+        self.assertIn('FRESHSKY_WORKSPACE_ID=civic', workflow)
 
     def test_deploy_workflow_tracks_reference_data(self):
         workflow = (ROOT / '.github/workflows/deploy.yml').read_text()

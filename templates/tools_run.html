@@ -32,6 +32,7 @@ button:hover{background:#991b1b}
 .sources li{margin:.35rem 0;color:#64748b}
 .sources a{font-weight:600}
 .disclaimer{color:#94a3b8;font-size:.82rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e5e7eb}
+.safety-boundary{background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #b91c1c;border-radius:8px;color:#7f1d1d;font-size:.88rem;margin:0 0 1rem;padding:.8rem 1rem}
 </style>
 <style id="fs-legacy-skin" media="not all">
 /* Fresh Sky AI portfolio skin — futuristic dark theme overlay. Injected
@@ -101,6 +102,8 @@ a:hover{color:#c4b5fd}
   <h1>{{ tool.icon }} {{ tool.title }}</h1>
   <p class="tag">{{ tool.tagline }}</p>
 
+  <p class="safety-boundary"><strong>Sensitive-data boundary:</strong> Do not enter rosters, CAPIDs, PHI or patient information, incident or case identifiers, exact addresses, or operational secrets.</p>
+
   <form method="POST" action="/tools/{{ slug }}" autocomplete="off">
     {% for key, label, kind in tool.fields %}
       <div class="field">
@@ -141,8 +144,8 @@ a:hover{color:#c4b5fd}
   <p class="disclaimer">
     <strong>Disclaimer:</strong> AI-generated draft. Verify against your AHJ, NFPA standards,
     department SOG, and current practice. Never use this tool for active-incident decisions.
-    Do not submit
-    PII / PHI. This app does not store form input; processing uses the configured
+    Do not submit rosters, CAPIDs, PII / PHI, incident or case identifiers,
+    exact addresses, or operational secrets. This app does not store form input; processing uses the configured
     privacy-restricted shared provider chain.
   </p>
 </main>

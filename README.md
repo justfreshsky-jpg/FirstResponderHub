@@ -10,7 +10,9 @@ The umbrella site that:
 
 Current source mappings use NFPA 1010 (2024), NFPA 1020 (2025), NFPA 1550 (2024), NFPA 1660 (2024), OSHA 29 CFR 1910.134, and NFPA 1006 with the edition formally adopted by the state/AHJ. NFPA's availability of a 2027 NFPA 1006 edition does not make it universally controlling. Source URLs, editions, and retrieval dates appear beside affected tools. Outputs are administrative drafts only and must never direct active-incident decisions.
 
-Flask app using the shared privacy-restricted U.S. provider chain. Access includes three previews, then costs $29.99/month; no user API key is required.
+Flask app using the shared privacy-restricted U.S. provider chain. Access includes three previews, then Civic costs $14.99/month with up to 40 usage units per day and 200 per month; no user API key is required. Civic covers CivicOps only and does not unlock non-Civic products. Existing subscribers with an eligible broader entitlement remain supported.
+
+Never submit rosters, CAPIDs, PHI or patient information, incident or case identifiers, exact addresses, or operational secrets. Protected details belong only in authorized department systems.
 
 ## Deploy
 

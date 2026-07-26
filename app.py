@@ -29,6 +29,9 @@ register_freemium(
     ),
     community_mode=True,
     gate_all_post=True,
+    subscription_tier='civic',
+    subscription_amount_cents=1499,
+    workspace_id='civic',
 )
 install_hulec(app, slug='firstresponder')
 install_security_headers(app)
@@ -62,17 +65,17 @@ _PRIVACY_HTML = """<!DOCTYPE html>
 </head><body>
 <a href="/">← Back to Fresh Sky AI for First Responders</a>
 <h1>Privacy Policy — Fresh Sky AI for First Responders</h1>
-<p><em>Last updated 2026-06-21</em></p>
+<p><em>Last updated 2026-07-26</em></p>
 <h2>What we collect</h2>
-<p>Fresh Sky AI for First Responders is a stateless tool. We do <strong>not</strong> require accounts. We do <strong>not</strong> store the text or voice input you submit. We do <strong>not</strong> upload member rosters, patient data, or any personally identifying information.</p>
+<p>Fresh Sky AI for First Responders does not store the text or voice input you submit. Three previews do not require an account; continued Civic access uses a verified email for subscription and usage checks.</p>
 <h2>What we send to AI providers</h2>
-<p>The text you submit is sent to the restricted U.S. provider pool (Cloudflare, Ollama, Cerebras, SambaNova, and Groq only when account-level Zero Data Retention is confirmed). Provider availability can change. Do not submit PII, PHI, member rosters, patient data, or sensitive operational details.</p>
+<p>The text you submit is sent to the restricted U.S. provider pool (Cloudflare, Ollama, Cerebras, SambaNova, and Groq only when account-level Zero Data Retention is confirmed). Provider availability can change. Do not submit rosters, CAPIDs, PII, PHI or patient data, incident or case identifiers, exact addresses, or operational secrets.</p>
 <h2>What gets logged</h2>
 <p>Standard request metadata (IP address, timestamp, response code) is logged by Google Cloud Run for operational purposes (debugging, abuse prevention) and rotated automatically per Google retention defaults. We do not associate logs with individual users.</p>
 <h2>Cookies</h2>
-<p>A Flask session cookie is set to remember ephemeral state during your visit. It expires when you close the browser. No third-party tracking, no advertising cookies.</p>
+<p>A Flask session cookie tracks preview usage and, after sign-in, authenticated subscription state. It never stores submitted tool text. There are no third-party tracking or advertising cookies.</p>
 <h2>Children</h2>
-<p>Some of our tools (e.g. CAPStudy) are designed to be used by minors aged 12+. We do not collect any personally identifying information from anyone, including minors. Parents/guardians of cadets aged 12-17 may use the tool freely.</p>
+<p>Some CivicOps tools (for example, CAPStudy) may be used by minors aged 12+. Users must not submit personally identifying information about anyone, including minors. Parents or guardians of cadets aged 12-17 may supervise use of the included previews or an eligible subscription.</p>
 <h2>Contact</h2>
 <p>Questions: <a href="https://www.freshskyai.com/contact">Fresh Sky contact page</a>. Operator: Fresh Sky LLC, Somerset County, NJ.</p>
 </body></html>"""
@@ -84,13 +87,13 @@ _TERMS_HTML = """<!DOCTYPE html>
 </head><body>
 <a href="/">← Back to Fresh Sky AI for First Responders</a>
 <h1>Terms of Use — Fresh Sky AI for First Responders</h1>
-<p><em>Last updated 2026-05-07</em></p>
+<p><em>Last updated 2026-07-26</em></p>
 <h2>What this is</h2>
-<p>Fresh Sky AI for First Responders is a paid, privacy-first tool offered by Fresh Sky LLC for U.S. fire departments, EMS, and police. Three previews are included; continued access is $29.99/month and may be canceled monthly.</p>
+<p>Fresh Sky AI for First Responders is a paid, privacy-first CivicOps tool offered by Fresh Sky LLC for U.S. fire departments, EMS, and police. Three previews are included; Civic access is $14.99/month with up to 40 usage units per day and 200 per month. Civic access covers CivicOps only and does not unlock non-Civic workspaces. Existing subscribers with an eligible broader entitlement retain access.</p>
 <h2>What this is not</h2>
 <p>Fresh Sky AI for First Responders is <strong>not</strong> affiliated with any government agency, military service, or official entity. Output is AI-generated and intended as a draft or study aid only — the human user is responsible for verifying accuracy against authoritative current sources before acting on or filing anything.</p>
 <h2>Use at your own discretion</h2>
-<p>You agree to use the tool in good faith. Do not submit personally identifying information (PII) about third parties, patient health information (PHI), or classified/sensitive operational details. The tool is not designed to handle such data and we do not warrant against any misuse.</p>
+<p>You agree to use the tool in good faith. Do not submit rosters, CAPIDs, personally identifying information (PII), patient health information (PHI), incident or case identifiers, exact addresses, classified information, or operational secrets. The tool is not designed to handle such data and we do not warrant against any misuse.</p>
 <h2>No warranty</h2>
 <p>The tool is provided "as is" without warranty of any kind. Fresh Sky LLC disclaims all liability for damages arising from use or misuse of the output.</p>
 <h2>Changes</h2>
