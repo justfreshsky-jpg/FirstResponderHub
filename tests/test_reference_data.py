@@ -84,7 +84,7 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertIn("subscription_tier='civic'", app_source)
         self.assertIn("workspace_id='civic'", app_source)
         self.assertIn(
-            'f6d78535e8a473fe64ca4b1e516cbbcad426799b',
+            '4a96d954812cf3239ba1c643d81b89209e34adea',
             requirements,
         )
         self.assertIn('FRESHSKY_WORKSPACE_ID=civic', workflow)
