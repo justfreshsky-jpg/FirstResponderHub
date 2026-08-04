@@ -50,11 +50,14 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertIn('OSHA 29 CFR 1910.134', prompt)
         self.assertIn('Never treat this output as real-time scene direction', prompt)
 
-    def test_homepage_labels_neris_as_current_and_nfirs_as_retired(self):
-        homepage = (ROOT / 'templates/index.html').read_text()
-        self.assertIn('calendar-year 2026 incident reporting is exclusively in NERIS', homepage)
+    def test_homepage_holds_neris_claims_pending_source_review(self):
+        homepage = (ROOT / 'templates/index.html').read_text(encoding='utf-8')
+        self.assertIn('Official-source review in progress', homepage)
+        self.assertIn('does not currently assert transition dates or reporting status', homepage)
         self.assertIn('NERIS Preparation Assistant', homepage)
         self.assertIn('No official codes', homepage)
+        self.assertIn('Review hold', homepage)
+        self.assertNotIn('href="https://nfirs.freshskyai.com"', homepage)
         self.assertNotIn('NFIRS Draft Demonstration', homepage)
         self.assertNotIn('NFIRS Assistant <span class="pill live">', homepage)
         self.assertNotIn('Volunteer depts lose ~50%', homepage)

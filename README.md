@@ -10,7 +10,7 @@ The umbrella site that:
 
 Current source mappings use NFPA 1010 (2024), NFPA 1020 (2025), NFPA 1550 (2024), NFPA 1660 (2024), OSHA 29 CFR 1910.134, and NFPA 1006 with the edition formally adopted by the state/AHJ. NFPA's availability of a 2027 NFPA 1006 edition does not make it universally controlling. Source URLs, editions, and retrieval dates appear beside affected tools. Outputs are administrative drafts only and must never direct active-incident decisions.
 
-Flask app using the shared privacy-restricted U.S. provider chain. Access includes three previews, then costs $29.99/month; no user API key is required.
+Flask app using the shared privacy-restricted U.S. provider chain. Access includes three previews, then Civic costs $14.99/month with no automatic overage charges; no user API key is required.
 
 ## Deploy
 
