@@ -63,9 +63,11 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertNotIn('Volunteer depts lose ~50%', homepage)
         self.assertNotIn('Multiple studies', homepage)
 
-    def test_deploy_workflow_tracks_reference_data(self):
+    def test_deploy_workflow_is_manual_and_deploys_repository_source(self):
         workflow = (ROOT / '.github/workflows/deploy.yml').read_text()
-        self.assertIn("- 'tools_data.py'", workflow)
+        self.assertIn('workflow_dispatch:', workflow)
+        self.assertNotIn('push:', workflow)
+        self.assertIn('--source .', workflow)
 
 
 if __name__ == '__main__':
