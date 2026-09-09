@@ -77,6 +77,7 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertIn('--source .', workflow)
         self.assertIn('--no-traffic', workflow)
         self.assertIn('--tag="$CANDIDATE_TAG"', workflow)
+        self.assertIn('CANDIDATE_TAG="candidate-${GITHUB_SHA:0:12}"', workflow)
         self.assertIn('stripe-runtime-restricted-key:latest', workflow)
         self.assertNotIn('STRIPE_SECRET_KEY=stripe-secret-key:latest', workflow)
         self.assertIn('Stable production traffic changed', workflow)
