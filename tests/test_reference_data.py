@@ -83,6 +83,17 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertIn('Stable production traffic changed', workflow)
         self.assertIn('Production traffic promotion: not performed', workflow)
 
+    def test_promotion_is_revision_bound_and_rollback_safe(self):
+        workflow = (ROOT / '.github/workflows/promote.yml').read_text()
+        self.assertIn('workflow_dispatch:', workflow)
+        self.assertNotIn('push:', workflow)
+        self.assertIn('PROMOTE_CIVICOPS', workflow)
+        self.assertIn('candidate-${SOURCE_SHA:0:12}', workflow)
+        self.assertIn('Exact tagged zero-traffic candidate was not found', workflow)
+        self.assertIn('ROLLBACK_SPEC', workflow)
+        self.assertIn('rollback_on_error', workflow)
+        self.assertIn("smoke 'https://firstresponder.freshskyai.com'", workflow)
+
 
 if __name__ == '__main__':
     unittest.main()

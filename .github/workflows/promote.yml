@@ -1,0 +1,108 @@
+name: Promote verified candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_revision:
+        description: Exact zero-traffic revision that passed candidate smoke tests
+        required: true
+        type: string
+      source_sha:
+        description: Exact 40-character source commit used to create the candidate
+        required: true
+        type: string
+      confirmation:
+        description: Type PROMOTE_CIVICOPS
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Promote exact candidate with automatic rollback
+        env:
+          CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          if [[ "$CONFIRMATION" != 'PROMOTE_CIVICOPS' ]]; then
+            echo '::error::Exact promotion confirmation is missing.'
+            exit 1
+          fi
+          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ || ! "$CANDIDATE_REVISION" =~ ^firstresponder-[0-9]{5}-[a-z0-9]{3}$ ]]; then
+            echo '::error::Source SHA or revision format is invalid.'
+            exit 1
+          fi
+          CANDIDATE_TAG="candidate-${SOURCE_SHA:0:12}"
+          SERVICE_JSON="$(gcloud run services describe firstresponder --region us-central1 --format=json)"
+          CANDIDATE_URL="$(jq -r --arg tag "$CANDIDATE_TAG" --arg revision "$CANDIDATE_REVISION" '.status.traffic[]? | select(.tag == $tag and .revisionName == $revision) | .url' <<<"$SERVICE_JSON")"
+          CANDIDATE_PERCENT="$(jq -r --arg revision "$CANDIDATE_REVISION" '[.status.traffic[]? | select(.revisionName == $revision) | (.percent // 0)] | add // 0' <<<"$SERVICE_JSON")"
+          ROLLBACK_SPEC="$(jq -r '[.status.traffic[]? | select((.percent // 0) > 0) | "\(.revisionName)=\(.percent)"] | join(",")' <<<"$SERVICE_JSON")"
+          ROLLBACK_TOTAL="$(jq -r '[.status.traffic[]? | select((.percent // 0) > 0) | .percent] | add // 0' <<<"$SERVICE_JSON")"
+          if [[ -z "$CANDIDATE_URL" || "$CANDIDATE_URL" == 'null' || "$CANDIDATE_PERCENT" != '0' ]]; then
+            echo '::error::Exact tagged zero-traffic candidate was not found.'
+            exit 1
+          fi
+          if [[ -z "$ROLLBACK_SPEC" || "$ROLLBACK_TOTAL" != '100' ]]; then
+            echo '::error::Current production traffic cannot be represented as an exact rollback.'
+            exit 1
+          fi
+
+          smoke() {
+            local base="$1"
+            local health review
+            health="$(curl --fail --silent --show-error --retry 6 --retry-delay 2 --retry-all-errors "$base/health")"
+            review="$(curl --fail --silent --show-error --retry 6 --retry-delay 2 --retry-all-errors "$base/review-pack")"
+            jq -e '.status == "ok"' <<<"$health" >/dev/null
+            grep -F 'requires no sign-in' <<<"$review" >/dev/null
+            grep -F 'uploads nothing' <<<"$review" >/dev/null
+            if grep -Fi 'halal' <<<"$review" >/dev/null; then
+              return 1
+            fi
+          }
+          smoke "$CANDIDATE_URL"
+
+          PROMOTED=false
+          rollback_on_error() {
+            local code=$?
+            if [[ "$PROMOTED" == true ]]; then
+              echo '::warning::Production smoke failed; restoring the captured traffic allocation.'
+              gcloud run services update-traffic firstresponder --region us-central1 --to-revisions="$ROLLBACK_SPEC" --quiet
+            fi
+            exit "$code"
+          }
+          trap rollback_on_error ERR
+          gcloud run services update-traffic firstresponder --region us-central1 --to-revisions="$CANDIDATE_REVISION=100" --quiet
+          PROMOTED=true
+          smoke 'https://firstresponder.freshskyai.com'
+          CURRENT_JSON="$(gcloud run services describe firstresponder --region us-central1 --format=json)"
+          CURRENT_PERCENT="$(jq -r --arg revision "$CANDIDATE_REVISION" '[.status.traffic[]? | select(.revisionName == $revision) | (.percent // 0)] | add // 0' <<<"$CURRENT_JSON")"
+          [[ "$CURRENT_PERCENT" == '100' ]]
+          PROMOTED=false
+          trap - ERR
+          {
+            echo '### CivicOps candidate promoted after passing production smoke tests'
+            echo "- Source commit: \`${SOURCE_SHA}\`"
+            echo "- Active revision: \`${CANDIDATE_REVISION}\`"
+            echo "- Prior rollback allocation: \`${ROLLBACK_SPEC}\`"
+            echo '- Candidate and custom-domain health/review-pack smoke checks: passed'
+            echo '- Automatic rollback on failed smoke: armed and not needed'
+          } >> "$GITHUB_STEP_SUMMARY"
