@@ -62,6 +62,11 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertNotIn('NFIRS Assistant <span class="pill live">', homepage)
         self.assertNotIn('Volunteer depts lose ~50%', homepage)
         self.assertNotIn('Multiple studies', homepage)
+        self.assertNotIn('without charging departments', homepage)
+        self.assertNotIn('The code is yours', homepage)
+        self.assertNotIn('work for any department out of the box', homepage)
+        self.assertIn('do not promise development', homepage)
+        self.assertIn('clearly displayed monthly Civic price', homepage)
 
     def test_deploy_workflow_is_manual_and_deploys_repository_source(self):
         workflow = (ROOT / '.github/workflows/deploy.yml').read_text()
