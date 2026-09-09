@@ -75,6 +75,12 @@ class ReferenceDataTests(unittest.TestCase):
         self.assertIn('workflow_dispatch:', workflow)
         self.assertNotIn('push:', workflow)
         self.assertIn('--source .', workflow)
+        self.assertIn('--no-traffic', workflow)
+        self.assertIn('--tag="$CANDIDATE_TAG"', workflow)
+        self.assertIn('stripe-runtime-restricted-key:latest', workflow)
+        self.assertNotIn('STRIPE_SECRET_KEY=stripe-secret-key:latest', workflow)
+        self.assertIn('Stable production traffic changed', workflow)
+        self.assertIn('Production traffic promotion: not performed', workflow)
 
 
 if __name__ == '__main__':
