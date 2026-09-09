@@ -38,18 +38,63 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy to Cloud Run
+      - name: Create and verify zero-traffic candidate
+        env:
+          CANDIDATE_TAG: candidate-${{ github.sha }}
         run: |
+          set -euo pipefail
+          CANDIDATE_TAG="${CANDIDATE_TAG:0:63}"
+          BEFORE_TRAFFIC="$(gcloud run services describe firstresponder --region us-central1 --format=json | jq -cS '[.status.traffic[]? | {revisionName,percent,tag,url}]')"
           GOOGLE_CLIENT_ID="$(gcloud run services describe freshskyai --region us-central1 --format=json | jq -r '.spec.template.spec.containers[0].env[] | select(.name == "GOOGLE_CLIENT_ID") | .value')"
           if [[ -z "$GOOGLE_CLIENT_ID" || "$GOOGLE_CLIENT_ID" == "null" ]]; then echo "::error::Shared Google client ID was not found."; exit 1; fi
           gcloud run deploy firstresponder \
             --source . \
             --region us-central1 \
             --allow-unauthenticated \
+            --no-traffic \
+            --tag="$CANDIDATE_TAG" \
             --min-instances=0 \
             --max-instances=3 \
             --cpu-throttling \
             --update-env-vars=APP_URL=https://firstresponder.freshskyai.com,GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}",SESSION_COOKIE_SECURE=true,GOOGLE_CLOUD_PROJECT=neon-glyph-491500-e2,VERTEX_AI_ENABLED=true,VERTEX_AI_LOCATION=us-central1,VERTEX_AI_MODEL=gemini-2.5-flash-lite,LLM_PRIVACY_PROFILE=us_public,GROQ_ZDR_CONFIRMED=true,FRESHSKY_SUBSCRIPTIONS_ENABLED=true,FRESHSKY_SUBSCRIPTION_TIER=civic,FRESHSKY_SUBSCRIPTION_PRICE_ID=price_1TwyaVCh3Z13FbXd5YcgzDx8,FRESHSKY_SUBSCRIPTION_AMOUNT_CENTS=1499,FRESHSKY_FREE_REQUEST_LIMIT=3 \
             --remove-secrets=MISTRAL_KEY \
-            --update-secrets=SECRET_KEY=app-secret-key:latest,GOOGLE_CLIENT_SECRET=google-oauth-client-secret:latest,STRIPE_SECRET_KEY=stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=stripe-webhook-secret:latest,GROQ_KEY=groq-key:latest,CEREBRAS_KEY=cerebras-key:latest \
+            --update-secrets=SECRET_KEY=app-secret-key:latest,GOOGLE_CLIENT_SECRET=google-oauth-client-secret:latest,STRIPE_SECRET_KEY=stripe-runtime-restricted-key:latest,STRIPE_WEBHOOK_SECRET=stripe-webhook-secret:latest,GROQ_KEY=groq-key:latest,CEREBRAS_KEY=cerebras-key:latest \
             --quiet
+
+          SERVICE_JSON="$(gcloud run services describe firstresponder --region us-central1 --format=json)"
+          AFTER_TRAFFIC="$(jq -cS '[.status.traffic[]? | {revisionName,percent,tag,url}]' <<<"$SERVICE_JSON")"
+          CANDIDATE_URL="$(jq -r --arg tag "$CANDIDATE_TAG" '.status.traffic[]? | select(.tag == $tag) | .url' <<<"$SERVICE_JSON")"
+          CANDIDATE_REVISION="$(jq -r '.status.latestCreatedRevisionName' <<<"$SERVICE_JSON")"
+          if [[ -z "$CANDIDATE_URL" || "$CANDIDATE_URL" == "null" ]]; then
+            echo '::error::Tagged candidate URL was not returned.'
+            exit 1
+          fi
+          BEFORE_STABLE="$(jq -cS '[.[] | select((.percent // 0) > 0) | {revisionName,percent}]' <<<"$BEFORE_TRAFFIC")"
+          AFTER_STABLE="$(jq -cS '[.[] | select((.percent // 0) > 0) | {revisionName,percent}]' <<<"$AFTER_TRAFFIC")"
+          if [[ "$BEFORE_STABLE" != "$AFTER_STABLE" ]]; then
+            echo '::error::Stable production traffic changed during candidate creation.'
+            exit 1
+          fi
+          if jq -e --arg revision "$CANDIDATE_REVISION" '.[] | select(.revisionName == $revision and (.percent // 0) > 0)' <<<"$AFTER_TRAFFIC" >/dev/null; then
+            echo '::error::Candidate unexpectedly received production traffic.'
+            exit 1
+          fi
+
+          HEALTH="$(curl --fail --silent --show-error --retry 4 --retry-all-errors "$CANDIDATE_URL/health")"
+          REVIEW="$(curl --fail --silent --show-error --retry 4 --retry-all-errors "$CANDIDATE_URL/review-pack")"
+          jq -e '.status == "ok"' <<<"$HEALTH" >/dev/null
+          grep -F 'requires no sign-in' <<<"$REVIEW" >/dev/null
+          grep -F 'uploads nothing' <<<"$REVIEW" >/dev/null
+          if grep -Fi 'halal' <<<"$REVIEW" >/dev/null; then
+            echo '::error::Superseded public policy wording remains in candidate HTML.'
+            exit 1
+          fi
+          {
+            echo "### Verified zero-traffic CivicOps candidate"
+            echo "- Source commit: \`${GITHUB_SHA}\`"
+            echo "- Revision: \`${CANDIDATE_REVISION}\`"
+            echo "- Candidate URL: ${CANDIDATE_URL}"
+            echo "- Stable traffic unchanged: yes"
+            echo "- Health and free local review-pack smoke checks: passed"
+            echo "- Production traffic promotion: not performed"
+          } >> "$GITHUB_STEP_SUMMARY"
