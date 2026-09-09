@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Free Administrative Review Pack — FreshSky CivicOps</title>
+  <meta name="description" content="Build a local meeting, readiness, or administrative handoff review pack without sign-in, AI usage, or uploads.">
+  <link rel="canonical" href="https://firstresponder.freshskyai.com/review-pack">
+  <link rel="stylesheet" href="/static/review_pack.css">
+  <script type="module" src="/static/review_pack.mjs"></script>
+</head>
+<body>
+<main class="pack-shell">
+  <a class="pack-back" href="/">← Back to CivicOps</a>
+  <p class="pack-eyebrow">FREE LOCAL WORKFLOW</p>
+  <h1>Administrative Review Pack</h1>
+  <p class="pack-lede">Choose an original checklist, record your own completion evidence, and export a review pack. This page makes no AI request, requires no sign-in, and uploads nothing.</p>
+  <div class="pack-notice" role="note"><strong>Keep it administrative and de-identified.</strong> Do not enter PII, PHI, patient narratives, rosters, incident identifiers, security-sensitive details, or active-scene information. Your work stays in this browser tab unless you download it.</div>
+
+  <section class="pack-card" aria-labelledby="pack-start-title">
+    <h2 id="pack-start-title">Start or replace the current pack</h2>
+    <div class="pack-fields">
+      <label>Workflow
+        <select id="pack-type">
+          <option value="meeting_review">Meeting preparation and action review</option>
+          <option value="readiness_review">Administrative readiness review</option>
+          <option value="report_handoff">Administrative report handoff</option>
+        </select>
+      </label>
+      <label>Pack title
+        <input id="pack-title" maxlength="160" value="My administrative review pack">
+      </label>
+      <label>De-identified context (optional)
+        <textarea id="pack-context" maxlength="500" rows="3" placeholder="Example: Monthly training committee review"></textarea>
+      </label>
+    </div>
+    <button id="start-pack" type="button">Start selected workflow</button>
+  </section>
+
+  <section class="pack-card" aria-labelledby="pack-review-title">
+    <div class="pack-heading-row"><h2 id="pack-review-title">Completeness review</h2><strong id="pack-summary">No pack started</strong></div>
+    <div id="pack-items"><p>Choose a workflow above to begin.</p></div>
+  </section>
+
+  <section class="pack-card" aria-labelledby="pack-save-title">
+    <h2 id="pack-save-title">Save, reopen, or export</h2>
+    <p>JSON preserves an editable local copy. The Markdown review pack is readable and unencrypted; inspect it before sharing.</p>
+    <div class="pack-actions">
+      <button id="save-pack" type="button">Download editable JSON</button>
+      <button id="export-pack" type="button" class="secondary">Export readable pack</button>
+      <label class="pack-open">Open editable JSON<input id="open-pack" type="file" accept="application/json,.json"></label>
+      <button id="clear-pack" type="button" class="danger">Clear this tab</button>
+    </div>
+    <p id="pack-status" role="status" aria-live="polite">No saved file loaded.</p>
+  </section>
+
+  <p>This tool records checklist completion only. It does not establish operational readiness, compliance, certification, or authorization to act. Current department policy, adopted references, official systems, and authorized reviewers remain controlling.</p>
+</main>
+</body>
+</html>

@@ -121,6 +121,7 @@ def _sitemap():
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         '  <url><loc>https://firstresponder.freshskyai.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n'
         '  <url><loc>https://firstresponder.freshskyai.com/tools</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        '  <url><loc>https://firstresponder.freshskyai.com/review-pack</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
         + extras +
         '</urlset>\n',
         mimetype='application/xml',
@@ -170,6 +171,12 @@ def _llm(system: str, user: str) -> str:
 @app.route('/tools')
 def _tools_index():
     return render_template('tools_index.html', slugs=all_slugs(), tools=TOOLS)
+
+
+@app.route('/review-pack')
+def _review_pack():
+    """Serve the free device-local administrative review pack."""
+    return render_template('review_pack.html')
 
 
 @app.route('/tools/<slug>', methods=['GET', 'POST'])
