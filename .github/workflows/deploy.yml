@@ -25,16 +25,15 @@ jobs:
 
       - name: Enforce Cloud Run budget lock
         run: |
-          if ! lock="$(gcloud secrets versions access latest --secret=cloud-run-budget-lock 2>/dev/null)"; then
-            if gcloud secrets describe cloud-run-budget-lock >/dev/null 2>&1; then
-              echo '::error::Cloud Run budget lock exists but could not be read.'
-              exit 1
-            fi
-            echo '::warning::Cloud Run budget lock is not configured yet.'
-            lock="open"
+          set -euo pipefail
+          if ! lock="$(gcloud secrets versions access latest \
+            --secret=cloud-run-budget-lock \
+            --project=neon-glyph-491500-e2 2>/dev/null)"; then
+            echo '::error::Cloud Run budget lock is missing or unreadable; refusing to deploy.'
+            exit 1
           fi
-          if [[ "$lock" == locked:* ]]; then
-            echo '::error::Cloud Run deployments are locked because monthly Cloud Run spend reached the $10 hard limit.'
+          if ! printf '%s' "$lock" | python3 tools/validate_budget_lock.py; then
+            echo '::error::Cloud Run budget lock is not fresh open; refusing to deploy.'
             exit 1
           fi
 

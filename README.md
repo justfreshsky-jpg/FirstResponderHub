@@ -14,4 +14,21 @@ Flask app using the shared privacy-restricted U.S. provider chain. Access includ
 
 ## Deploy
 
-Push to `main` triggers GH Actions → `gcloud run deploy firstresponder` via Workload Identity Federation. Standard pattern from the rest of the Fresh Sky AI portfolio.
+Deployment is started manually through the GitHub Actions `Deploy` workflow
+(`workflow_dispatch`); pushing or merging source does not run it. It prepares a
+zero-traffic candidate using Workload Identity Federation. Production promotion
+remains a separate manual workflow.
+
+The deployment gate reads `cloud-run-budget-lock` explicitly from the FreshSky
+project `neon-glyph-491500-e2`. A failed or missing read blocks deployment. Only
+`open:<timezone-aware ISO timestamp>` is accepted, with an age of at most 30 hours
+and at most 2 minutes of future clock skew. Empty, literal `open`, malformed,
+stale, `locked`, and `throttled` values fail closed. These are the existing
+FreshSky production bounds, taken from
+[`budget_runtime.py`](https://github.com/justfreshsky-jpg/freshskyai/blob/b682121fc5f02b4b2b74ff1ec508f4116c9dbff9/budget_runtime.py)
+and its deployment checker at that reviewed source commit.
+
+Offline checks: `python -m pytest tests/ -q` and
+`node --test tests/review_pack_model.test.mjs`. Budget-gate tests execute the
+workflow's actual shell block with a local mocked `gcloud`; they make no Cloud
+calls or deployments.
